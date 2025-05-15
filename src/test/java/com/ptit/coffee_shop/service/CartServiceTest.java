@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@Transactional
 class CartServiceTest {
 
     @Mock
@@ -108,10 +110,10 @@ class CartServiceTest {
     }
 
     @Nested
-    @DisplayName("Test addCartItem")
+    @DisplayName("TC1-7: Test addCartItem")
     class AddCartItemTest {
         @Test
-        @DisplayName("Thêm sản phẩm mới vào giỏ hàng thành công")
+        @DisplayName("TC1 - Thêm sản phẩm mới vào giỏ hàng thành công")
         void addCartItem_Success_NewItem() {
             // Input: CartItemRequest hợp lệ với sản phẩm chưa có trong giỏ
             // Expected: Thêm thành công và trả về RespMessage với code 000
@@ -135,7 +137,7 @@ class CartServiceTest {
         }
 
         @Test
-        @DisplayName("Cập nhật số lượng sản phẩm đã có trong giỏ hàng")
+        @DisplayName("TC2 - Cập nhật số lượng sản phẩm đã có trong giỏ hàng")
         void addCartItem_Success_ExistingItem() {
             // Input: CartItemRequest với sản phẩm đã có trong giỏ
             // Expected: Cập nhật số lượng thành công và trả về RespMessage với code 000
@@ -159,7 +161,7 @@ class CartServiceTest {
         }
 
         @Test
-        @DisplayName("Thêm sản phẩm với số lượng không hợp lệ")
+        @DisplayName("TC3 - Thêm sản phẩm với số lượng không hợp lệ")
         void addCartItem_InvalidQuantity() {
             // Input: CartItemRequest với quantity <= 0
             // Expected: Ném ra CoffeeShopException với code 101
@@ -177,7 +179,7 @@ class CartServiceTest {
         }
 
         @Test
-        @DisplayName("Thêm sản phẩm với userId không hợp lệ")
+        @DisplayName("TC4 - Thêm sản phẩm với userId không hợp lệ")
         void addCartItem_InvalidUserId() {
             // Input: CartItemRequest với userId <= 0
             // Expected: Ném ra CoffeeShopException với code 101
@@ -195,7 +197,7 @@ class CartServiceTest {
         }
 
         @Test
-        @DisplayName("Thêm sản phẩm với productItemId không hợp lệ")
+        @DisplayName("TC5 - Thêm sản phẩm với productItemId không hợp lệ")
         void addCartItem_InvalidProductItemId() {
             // Input: CartItemRequest với productItemId <= 0
             // Expected: Ném ra CoffeeShopException với code 101
@@ -213,7 +215,7 @@ class CartServiceTest {
         }
 
         @Test
-        @DisplayName("Thêm sản phẩm không tồn tại")
+        @DisplayName("TC6 - Thêm sản phẩm không tồn tại")
         void addCartItem_ProductNotFound() {
             // Input: CartItemRequest với productItemId không tồn tại
             // Expected: Ném ra CoffeeShopException với code 103
@@ -228,7 +230,7 @@ class CartServiceTest {
         }
 
         @Test
-        @DisplayName("Thêm sản phẩm với user không tồn tại")
+        @DisplayName("TC7 - Thêm sản phẩm với user không tồn tại")
         void addCartItem_UserNotFound() {
             // Input: CartItemRequest với userId không tồn tại
             // Expected: Ném ra CoffeeShopException với code 103
@@ -245,10 +247,10 @@ class CartServiceTest {
     }
 
     @Nested
-    @DisplayName("Test getCartItems")
+    @DisplayName("TC8-10: Test getCartItems")
     class GetCartItemsTest {
         @Test
-        @DisplayName("Lấy danh sách sản phẩm trong giỏ hàng thành công")
+        @DisplayName("TC8 - Lấy danh sách sản phẩm trong giỏ hàng thành công")
         void getCartItems_Success() {
             // Input: userId hợp lệ
             // Expected: Trả về RespMessage với code 000 và danh sách sản phẩm
@@ -269,7 +271,7 @@ class CartServiceTest {
         }
 
         @Test
-        @DisplayName("Lấy giỏ hàng trống")
+        @DisplayName("TC9 - Lấy giỏ hàng trống")
         void getCartItems_EmptyCart() {
             // Input: userId hợp lệ nhưng giỏ hàng trống
             // Expected: Trả về RespMessage với code 000 và danh sách rỗng
@@ -288,7 +290,7 @@ class CartServiceTest {
         }
 
         @Test
-        @DisplayName("Lấy giỏ hàng với userId không hợp lệ")
+        @DisplayName("TC10 - Lấy giỏ hàng với userId không hợp lệ")
         void getCartItems_InvalidUserId() {
             // Input: userId <= 0
             // Expected: Ném ra CoffeeShopException với code 101
@@ -301,10 +303,10 @@ class CartServiceTest {
     }
 
     @Nested
-    @DisplayName("Test updateCartItem")
+    @DisplayName("TC11-14: Test updateCartItem")
     class UpdateCartItemTest {
         @Test
-        @DisplayName("Cập nhật số lượng sản phẩm thành công")
+        @DisplayName("TC11 - Cập nhật số lượng sản phẩm thành công")
         void updateCartItem_Success() {
             // Input: CartItemRequest hợp lệ
             // Expected: Cập nhật thành công và trả về RespMessage với code 000
@@ -326,7 +328,7 @@ class CartServiceTest {
         }
 
         @Test
-        @DisplayName("Cập nhật số lượng vượt quá tồn kho")
+        @DisplayName("TC12 - Cập nhật số lượng vượt quá tồn kho")
         void updateCartItem_QuantityExceedsStock() {
             // Input: CartItemRequest với quantity > stock
             // Expected: Ném ra CoffeeShopException với code 101
@@ -348,7 +350,7 @@ class CartServiceTest {
         }
 
         @Test
-        @DisplayName("Cập nhật sản phẩm không tồn tại trong giỏ")
+        @DisplayName("TC13 - Cập nhật sản phẩm không tồn tại trong giỏ")
         void updateCartItem_ItemNotFound() {
             // Input: CartItemRequest với sản phẩm không có trong giỏ
             // Expected: Ném ra CoffeeShopException với code 103
@@ -365,7 +367,7 @@ class CartServiceTest {
         }
 
         @Test
-        @DisplayName("Cập nhật với số lượng không hợp lệ")
+        @DisplayName("TC14 - Cập nhật với số lượng không hợp lệ")
         void updateCartItem_InvalidQuantity() {
             // Input: CartItemRequest với quantity <= 0
             // Expected: Ném ra CoffeeShopException với code 101
@@ -388,10 +390,10 @@ class CartServiceTest {
     }
 
     @Nested
-    @DisplayName("Test deleteCartItem")
+    @DisplayName("TC15-16: Test deleteCartItem")
     class DeleteCartItemTest {
         @Test
-        @DisplayName("Xóa sản phẩm khỏi giỏ hàng thành công")
+        @DisplayName("TC15 - Xóa sản phẩm khỏi giỏ hàng thành công")
         void deleteCartItem_Success() {
             // Input: itemId hợp lệ
             // Expected: Xóa thành công và trả về RespMessage với code 000
@@ -410,7 +412,7 @@ class CartServiceTest {
         }
 
         @Test
-        @DisplayName("Xóa sản phẩm không tồn tại")
+        @DisplayName("TC16 - Xóa sản phẩm không tồn tại")
         void deleteCartItem_ItemNotFound() {
             // Input: itemId không tồn tại
             // Expected: Ném ra CoffeeShopException với code 103
@@ -426,10 +428,10 @@ class CartServiceTest {
     }
 
     @Nested
-    @DisplayName("Test toProductItemResponse")
+    @DisplayName("TC17: Test toProductItemResponse")
     class ToProductItemResponseTest {
         @Test
-        @DisplayName("Chuyển đổi ProductItem thành ProductItemResponse thành công")
+        @DisplayName("TC17 - Chuyển đổi ProductItem thành ProductItemResponse thành công")
         void toProductItemResponse_Success() {
             // Input: ProductItem hợp lệ
             // Expected: Trả về ProductItemResponse với đầy đủ thông tin

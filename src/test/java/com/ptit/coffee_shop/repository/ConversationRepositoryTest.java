@@ -36,13 +36,12 @@ class ConversationRepositoryTest {
     }
 
     /**
-     * ✅ TC1: Test findByUserIsActive() khi có cả host ACTIVE và INACTIVE.
-     * ➤ Mong đợi: chỉ các conversation có host ACTIVE được trả về.
+     *  TC1: Test findByUserIsActive() khi có cả host ACTIVE và INACTIVE.
+     *  Mong đợi: chỉ các conversation có host ACTIVE được trả về.
      */
     @Test
     @Transactional
-    @DisplayName("findByUserIsActive() trả về chỉ các conversation có host ACTIVE")
-    void test_findByUserIsActive_mixedStatus() {
+    void TC1_findByUserIsActive_mixedStatus() {
         // Given
         User activeUser = createUser("Active User", "active@example.com", Status.ACTIVE);
         User inactiveUser = createUser("Inactive User", "inactive@example.com", Status.INACTIVE);
@@ -66,13 +65,12 @@ class ConversationRepositoryTest {
     }
 
     /**
-     * ✅ TC2: Test findByUserIsActive() khi tất cả host đều ACTIVE.
-     * ➤ Mong đợi: trả về tất cả các conversation.
+     * TC2: Test findByUserIsActive() khi tất cả host đều ACTIVE.
+     * Mong đợi: trả về tất cả các conversation.
      */
     @Test
     @Transactional
-    @DisplayName("findByUserIsActive() trả về toàn bộ conversation nếu tất cả host ACTIVE")
-    void test_findByUserIsActive_allActive() {
+    void TC2_findByUserIsActive_allActive() {
         User u1 = createUser("A1", "a1@example.com", Status.ACTIVE);
         User u2 = createUser("A2", "a2@example.com", Status.ACTIVE);
 
@@ -90,13 +88,12 @@ class ConversationRepositoryTest {
     }
 
     /**
-     * ✅ TC3: Test findByUserIsActive() khi tất cả host đều INACTIVE.
-     * ➤ Mong đợi: danh sách trả về rỗng.
+     * TC3: Test findByUserIsActive() khi tất cả host đều INACTIVE.
+     * Mong đợi: danh sách trả về rỗng.
      */
     @Test
     @Transactional
-    @DisplayName("findByUserIsActive() trả về rỗng nếu không có host ACTIVE")
-    void test_findByUserIsActive_allInactive() {
+    void TC3_findByUserIsActive_allInactive() {
         User u1 = createUser("I1", "i1@example.com", Status.INACTIVE);
         userRepository.save(u1);
 
@@ -109,13 +106,12 @@ class ConversationRepositoryTest {
     }
 
     /**
-     * ✅ TC4: Test findByUserIsActive() khi không có conversation nào.
-     * ➤ Mong đợi: danh sách trả về rỗng.
+     * TC4: Test findByUserIsActive() khi không có conversation nào.
+     * Mong đợi: danh sách trả về rỗng.
      */
     @Test
     @Transactional
-    @DisplayName("findByUserIsActive() trả về rỗng khi không có conversation nào")
-    void test_findByUserIsActive_emptyDB() {
+    void TC4_findByUserIsActive_emptyDB() {
         List<Conversation> result = conversationRepository.findByUserIsActive();
         assertNotNull(result);
         assertTrue(result.isEmpty());

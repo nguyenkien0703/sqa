@@ -49,9 +49,9 @@ class JwtAuthenticationFilterTest {
     }
 
     /**
-     * ✅ TC1: Test với token hợp lệ.
-     * ➤ Input: Token hợp lệ trong header request.
-     * ➤ Mục tiêu: Kiểm tra xem khi token hợp lệ thì thông tin người dùng được set vào SecurityContextHolder.
+     * TC1: Test với token hợp lệ.
+     * Input: Token hợp lệ trong header request.
+     * Mục tiêu: Kiểm tra xem khi token hợp lệ thì thông tin người dùng được set vào SecurityContextHolder.
      */
     @Test
     @DisplayName("TC1 - Token hợp lệ: xác thực thành công và set vào SecurityContextHolder")
@@ -75,9 +75,9 @@ class JwtAuthenticationFilterTest {
     }
 
     /**
-     * ✅ TC2: Test với token không hợp lệ.
-     * ➤ Input: Token không hợp lệ trong header request.
-     * ➤ Mục tiêu: Kiểm tra xem khi token không hợp lệ thì không có gì được set vào SecurityContextHolder.
+     * TC2: Test với token không hợp lệ.
+     * Input: Token không hợp lệ trong header request.
+     * Mục tiêu: Kiểm tra xem khi token không hợp lệ thì không có gì được set vào SecurityContextHolder.
      */
     @Test
     @DisplayName("TC2 - Token không hợp lệ: không set gì vào SecurityContextHolder")
@@ -98,9 +98,9 @@ class JwtAuthenticationFilterTest {
     }
 
     /**
-     * ✅ TC3: Test khi token ném ra CoffeeShopException.
-     * ➤ Input: Token gây ra CoffeeShopException khi validate.
-     * ➤ Mục tiêu: Kiểm tra xem khi token ném ra `CoffeeShopException`, thông báo lỗi được gán vào request attribute.
+     * TC3: Test khi token ném ra CoffeeShopException.
+     * Input: Token gây ra CoffeeShopException khi validate.
+     * Mục tiêu: Kiểm tra xem khi token ném ra `CoffeeShopException`, thông báo lỗi được gán vào request attribute.
      */
     @Test
     @DisplayName("TC3 - Token ném CoffeeShopException: gán message lỗi vào request")
@@ -127,9 +127,9 @@ class JwtAuthenticationFilterTest {
     }
 
     /**
-     * ✅ TC4: Test khi validateToken ném ra exception khác.
-     * ➤ Input: Token gây ra RuntimeException khi validate.
-     * ➤ Mục tiêu: Kiểm tra xem khi token ném ra exception khác, thông báo lỗi với mã UNDEFINED được gán vào request attribute.
+     * TC4: Test khi validateToken ném ra exception khác.
+     * Input: Token gây ra RuntimeException khi validate.
+     * Mục tiêu: Kiểm tra xem khi token ném ra exception khác, thông báo lỗi với mã UNDEFINED được gán vào request attribute.
      */
     @Test
     @DisplayName("TC4 - Token ném RuntimeException: gán lỗi UNDEFINED vào request")
@@ -152,5 +152,106 @@ class JwtAuthenticationFilterTest {
         // Then: Kiểm tra attribute exception trên request chứa thông báo lỗi
         assertEquals(mockResp, request.getAttribute("exception"));
         verify(filterChain).doFilter(request, response);
+    }
+
+    /**
+     * TC5: Test khi không có authorization header.
+     * Input: Request không có authorization header.
+     * Mục tiêu: Kiểm tra xem khi không có header, không có gì được set vào SecurityContextHolder.
+     */
+    @Test
+    @DisplayName("TC5 - Không có authorization header: không set gì vào SecurityContextHolder")
+    void test_TC5_noAuthorizationHeader_doesNotSetAuthentication() throws Exception {
+        // Given: Request không có authorization header
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        // When: Gọi phương thức doFilterInternal với request không có header
+        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+        // Then: Kiểm tra không có gì được set vào SecurityContextHolder
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        verify(filterChain).doFilter(request, response);
+        // Verify validateToken không được gọi vì không có token
+        verify(jwtTokenProvider, never()).validateToken(any());
+    }
+
+    /**
+     * TC6: Test khi authorization header không bắt đầu bằng "Bearer ".
+     * Input: Authorization header không đúng định dạng.
+     * Mục tiêu: Kiểm tra xem khi header không đúng định dạng, không có gì được set vào SecurityContextHolder.
+     */
+    @Test
+    @DisplayName("TC6 - Authorization header không đúng định dạng: không set gì vào SecurityContextHolder")
+    void test_TC6_invalidAuthorizationHeaderFormat_doesNotSetAuthentication() throws Exception {
+        // Given: Header không bắt đầu bằng "Bearer "
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("authorization", "Token some.token.here");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        // When: Gọi phương thức doFilterInternal với request có header không đúng định dạng
+        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+        // Then: Kiểm tra không có gì được set vào SecurityContextHolder
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        verify(filterChain).doFilter(request, response);
+        // Verify validateToken không được gọi vì token không được trích xuất
+        verify(jwtTokenProvider, never()).validateToken(any());
+    }
+
+    /**
+     * TC7: Test khi UserDetailsService ném ra exception.
+     * Input: Token hợp lệ nhưng UserDetailsService ném ra exception.
+     * Mục tiêu: Kiểm tra xem khi UserDetailsService ném ra exception, thông báo lỗi được gán vào request attribute.
+     */
+    @Test
+    @DisplayName("TC7 - UserDetailsService ném exception: gán lỗi UNDEFINED vào request")
+    void test_TC7_userDetailsServiceThrowsException_setsUndefinedExceptionAttribute() throws Exception {
+        // Given: Token hợp lệ nhưng UserDetailsService ném exception
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("authorization", "Bearer valid.token.here");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        when(jwtTokenProvider.validateToken("valid.token.here")).thenReturn(true);
+        when(jwtTokenProvider.getUsername("valid.token.here")).thenReturn("testuser");
+        
+        // UserDetailsService ném exception
+        when(userDetailsService.loadUserByUsername("testuser"))
+                .thenThrow(new RuntimeException("User not found"));
+        
+        // RespMessage với mã UNDEFINED
+        RespMessage mockResp = new RespMessage(Constant.UNDEFINED, "User not found", null);
+        when(messageBuilder.buildFailureMessage(Constant.UNDEFINED, null, "User not found")).thenReturn(mockResp);
+
+        // When: Gọi phương thức doFilterInternal với request gây lỗi
+        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+        // Then: Kiểm tra attribute exception trên request chứa thông báo lỗi
+        assertEquals(mockResp, request.getAttribute("exception"));
+        verify(filterChain).doFilter(request, response);
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    /**
+     * TC8: Test với token rỗng.
+     * Input: Authorization header có format "Bearer " nhưng token rỗng.
+     * Mục tiêu: Kiểm tra xem khi token rỗng, không có gì được set vào SecurityContextHolder.
+     */
+    @Test
+    @DisplayName("TC8 - Token rỗng: không set gì vào SecurityContextHolder")
+    void test_TC8_emptyToken_doesNotSetAuthentication() throws Exception {
+        // Given: Token rỗng (chỉ có "Bearer ")
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("authorization", "Bearer ");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        // When: Gọi phương thức doFilterInternal với request có token rỗng
+        jwtAuthenticationFilter.doFilterInternal(request, response, filterChain);
+
+        // Then: Kiểm tra không có gì được set vào SecurityContextHolder
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        verify(filterChain).doFilter(request, response);
+        // Verify validateToken không được gọi với token rỗng
+        verify(jwtTokenProvider, never()).validateToken("");
     }
 }

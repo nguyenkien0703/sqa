@@ -38,10 +38,10 @@ class EmailServiceTest {
     }
 
     @Nested
-    @DisplayName("Test sendSimpleMail")
+    @DisplayName("TC1-6: Test sendSimpleMail")
     class SendSimpleMailTest {
         @Test
-        @DisplayName("Gửi email thành công")
+        @DisplayName("TC1 - Gửi email thành công")
         void sendSimpleMail_Success() {
             // Input: MailBody hợp lệ
             // Expected: Gửi email thành công
@@ -57,7 +57,7 @@ class EmailServiceTest {
         }
 
         @Test
-        @DisplayName("Gửi email thất bại do lỗi mail sender")
+        @DisplayName("TC2 - Gửi email thất bại do lỗi mail sender")
         void sendSimpleMail_MailSenderError() {
             // Input: MailBody hợp lệ nhưng mail sender lỗi
             // Expected: Ném ra RuntimeException
@@ -71,7 +71,7 @@ class EmailServiceTest {
         }
 
         @Test
-        @DisplayName("Gửi email với MailBody null")
+        @DisplayName("TC3 - Gửi email với MailBody null")
         void sendSimpleMail_NullMailBody() {
             // Input: MailBody null
             // Expected: Ném ra NullPointerException
@@ -82,7 +82,7 @@ class EmailServiceTest {
         }
 
         @Test
-        @DisplayName("Gửi email với recipient null")
+        @DisplayName("TC4 - Gửi email với recipient null")
         void sendSimpleMail_NullRecipient() {
             // Input: MailBody với recipient null
             // Expected: Ném ra NullPointerException
@@ -100,7 +100,7 @@ class EmailServiceTest {
         }
 
         @Test
-        @DisplayName("Gửi email với subject null")
+        @DisplayName("TC5 - Gửi email với subject null")
         void sendSimpleMail_NullSubject() {
             // Input: MailBody với subject null
             // Expected: Ném ra NullPointerException
@@ -118,7 +118,7 @@ class EmailServiceTest {
         }
 
         @Test
-        @DisplayName("Gửi email với body null")
+        @DisplayName("TC6 - Gửi email với body null")
         void sendSimpleMail_NullBody() {
             // Input: MailBody với body null
             // Expected: Ném ra NullPointerException

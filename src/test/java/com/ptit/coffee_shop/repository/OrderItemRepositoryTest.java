@@ -39,14 +39,13 @@ class OrderItemRepositoryTest {
     private ShippingAddressRepository shippingAddressRepository;
 
     /**
-     * ✅ TC1: Test findByOrderId() trả về các OrderItem đúng với orderId.
+     * TC1: Test findByOrderId() trả về các OrderItem đúng với orderId.
      * Input: Tạo 1 order và 1 orderItem gắn với order đó
      * Expected Output: Kết quả trả về list 1 phần tử và phần tử đó có orderId trùng với order vừa tạo
      */
     @Test
     @Transactional
-    @DisplayName("findByOrderId() trả về các OrderItem theo orderId")
-    void testFindByOrderId() {
+    void TC1_testFindByOrderId() {
         Order order = new Order();
         order.setOrderDate(new Date());
         order.setStatus(OrderStatus.Completed);
@@ -65,14 +64,13 @@ class OrderItemRepositoryTest {
     }
 
     /**
-     * ✅ TC2: Test findTop5MonthlySellingProducts() trả về các sản phẩm bán chạy trong tháng.
+     * TC2: Test findTop5MonthlySellingProducts() trả về các sản phẩm bán chạy trong tháng.
      * Input: Tạo 1 product, 1 productItem, 1 order, 1 orderItem với amount > 0 trong khoảng ngày hiện tại
      * Expected Output: Danh sách kết quả không rỗng (contains sản phẩm vừa tạo)
      */
     @Test
     @Transactional
-    @DisplayName("findTop5MonthlySellingProducts() trả về các sản phẩm bán chạy trong tháng")
-    void testFindTop5MonthlySellingProducts() {
+    void TC2_testFindTop5MonthlySellingProducts() {
         Product product = new Product();
         product.setName("Espresso");
         productRepository.save(product);
@@ -106,14 +104,13 @@ class OrderItemRepositoryTest {
     }
 
     /**
-     * ✅ TC3: Test findTop5BestSellingProducts() trả về các sản phẩm bán chạy nhất tổng thể.
+     * TC3: Test findTop5BestSellingProducts() trả về các sản phẩm bán chạy nhất tổng thể.
      * Input: Tạo product, productItem, order, orderItem với amount > 0
      * Expected Output: Danh sách kết quả không rỗng (contains sản phẩm vừa tạo)
      */
     @Test
     @Transactional
-    @DisplayName("findTop5BestSellingProducts() trả về các sản phẩm bán chạy nhất")
-    void testFindTop5BestSellingProducts() {
+    void TC3_testFindTop5BestSellingProducts() {
         Product product = new Product();
         product.setName("Latte");
         productRepository.save(product);
@@ -141,14 +138,13 @@ class OrderItemRepositoryTest {
     }
 
     /**
-     * ✅ TC4: Test findTop5BestCustomers() trả về những khách hàng chi tiêu nhiều nhất.
+     * TC4: Test findTop5BestCustomers() trả về những khách hàng chi tiêu nhiều nhất.
      * Input: Tạo user, address, order, orderItem với chi tiêu cao
      * Expected Output: user vừa tạo đứng đầu danh sách kết quả
      */
     @Test
     @Transactional
-    @DisplayName("findTop5BestCustomers() trả về khách hàng chi tiêu nhiều nhất")
-    void testFindTop5BestCustomers() {
+    void TC4_testFindTop5BestCustomers() {
         User user = new User();
         user.setName("John Doe");
         user.setEmail("john.doe@gmail.com");
@@ -179,14 +175,13 @@ class OrderItemRepositoryTest {
     }
 
     /**
-     * ✅ TC5: Test findTop5MonthlyCustomers() trả về khách hàng chi tiêu nhiều nhất trong tháng.
+     * TC5: Test findTop5MonthlyCustomers() trả về khách hàng chi tiêu nhiều nhất trong tháng.
      * Input: Tạo user, address, order, orderItem với chi tiêu tháng này
      * Expected Output: user vừa tạo đứng đầu danh sách kết quả
      */
     @Test
     @Transactional
-    @DisplayName("findTop5MonthlyCustomers() trả về khách hàng chi tiêu nhiều trong tháng")
-    void testFindTop5MonthlyCustomers() {
+    void TC5_testFindTop5MonthlyCustomers() {
         Calendar cal = Calendar.getInstance();
         int month = cal.get(Calendar.MONTH) + 1;
         int year = cal.get(Calendar.YEAR);
@@ -221,14 +216,13 @@ class OrderItemRepositoryTest {
     }
 
     /**
-     * ✅ TC6: Test findTotalSold() trả về tổng số lượng sản phẩm đã bán.
+     * TC6: Test findTotalSold() trả về tổng số lượng sản phẩm đã bán.
      * Input: Tạo product, productItem, order, orderItem với amount = 15
      * Expected Output: Tổng sold trả về là 15
      */
     @Test
     @Transactional
-    @DisplayName("findTotalSold() trả về tổng số lượng đã bán của 1 sản phẩm")
-    void testFindTotalSold() {
+    void TC6_testFindTotalSold() {
         Product product = new Product();
         product.setName("Cappuccino");
         productRepository.save(product);

@@ -79,7 +79,7 @@ class TransactionServiceTest {
     @DisplayName("Test addTransaction")
     class AddTransactionTest {
         @Test
-        @DisplayName("Thêm transaction thành công")
+        @DisplayName("TC01 - Thêm transaction thành công")
         void addTransaction_Success() {
             // Input: TransactionRequest hợp lệ
             // Expected: Trả về RespMessage chứa thông tin transaction đã tạo
@@ -102,7 +102,7 @@ class TransactionServiceTest {
         }
 
         @Test
-        @DisplayName("Thêm transaction thất bại khi không tìm thấy order")
+        @DisplayName("TC02 - Thêm transaction thất bại khi không tìm thấy order")
         void addTransaction_OrderNotFound() {
             // Input: TransactionRequest với orderId không tồn tại
             // Expected: Ném ra CoffeeShopException với mã lỗi NOT_FOUND
@@ -119,7 +119,7 @@ class TransactionServiceTest {
         }
 
         @Test
-        @DisplayName("Thêm transaction thất bại khi lưu transaction thất bại")
+        @DisplayName("TC03 - Thêm transaction thất bại khi lưu transaction thất bại")
         void addTransaction_SaveFailed() {
             // Input: TransactionRequest hợp lệ
             // Expected: Ném ra CoffeeShopException với mã lỗi UNDEFINED
@@ -141,7 +141,7 @@ class TransactionServiceTest {
     @DisplayName("Test getTransaction")
     class GetTransactionTest {
         @Test
-        @DisplayName("Lấy transaction thành công")
+        @DisplayName("TC04 - Lấy transaction thành công")
         void getTransaction_Success() {
             // Input: orderId hợp lệ
             // Expected: Trả về RespMessage chứa thông tin transaction
@@ -162,7 +162,7 @@ class TransactionServiceTest {
         }
 
         @Test
-        @DisplayName("Lấy transaction thất bại khi không tìm thấy transaction")
+        @DisplayName("TC05 - Lấy transaction thất bại khi không tìm thấy transaction")
         void getTransaction_NotFound() {
             // Input: orderId không có transaction
             // Expected: Ném ra CoffeeShopException với mã lỗi NOT_FOUND

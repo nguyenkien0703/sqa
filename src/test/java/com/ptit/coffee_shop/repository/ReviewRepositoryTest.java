@@ -36,14 +36,13 @@ class ReviewRepositoryTest {
     private ProductRepository productRepository;
 
     /**
-     * ✅ TC1: Test findByProductId() trả về danh sách các review của sản phẩm theo productId.
+     * TC1: Test findByProductId() trả về danh sách các review của sản phẩm theo productId.
      * Input: Tạo product, productItem, orderItem, review với status = 'ACTIVE' cho productId
      * Expected Output: Danh sách reviews có productId tương ứng với product đã tạo
      */
     @Test
     @Transactional
-    @DisplayName("findByProductId() trả về các Review của sản phẩm theo productId")
-    void testFindByProductId() {
+    void TC1_testFindByProductId() {
         // Setup Product and ProductItem
         Product product = new Product();
         product.setName("Mocha");
@@ -82,14 +81,13 @@ class ReviewRepositoryTest {
     }
 
     /**
-     * ✅ TC2: Test findByOrderId() trả về danh sách các review của orderId.
+     * TC2: Test findByOrderId() trả về danh sách các review của orderId.
      * Input: Tạo order, orderItem, review với orderId
      * Expected Output: Danh sách reviews có orderId tương ứng với order đã tạo
      */
     @Test
     @Transactional
-    @DisplayName("findByOrderId() trả về các Review của đơn hàng theo orderId")
-    void testFindByOrderId() {
+    void TC2_testFindByOrderId() {
         // Setup Product, ProductItem, Order, OrderItem
         Product product = new Product();
         product.setName("Latte");

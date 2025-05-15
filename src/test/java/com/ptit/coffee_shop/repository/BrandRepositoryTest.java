@@ -23,13 +23,12 @@ public class BrandRepositoryTest {
     private BrandRepository brandRepository;
 
     /**
-     * ✅ TC1: Test getAll() khi có cả Brand ACTIVE và INACTIVE trong database.
-     * ➤ Kết quả mong đợi: chỉ những Brand có trạng thái ACTIVE được trả về.
+     * TC1: Test getAll() khi có cả Brand ACTIVE và INACTIVE trong database.
+     * Kết quả mong đợi: chỉ những Brand có trạng thái ACTIVE được trả về.
      */
     @Test
     @Transactional
-    @DisplayName("getAll() trả về chỉ các Brand có status ACTIVE")
-    void test_TC1_getAllBrands_withActiveAndInactive() {
+    void TC1_getAllBrands_withActiveAndInactive() {
         // Given: 1 Brand ACTIVE và 1 Brand INACTIVE
         Brand activeBrand = new Brand();
         activeBrand.setName("Highlands");
@@ -51,13 +50,12 @@ public class BrandRepositoryTest {
     }
 
     /**
-     * ✅ TC2: Test getAll() khi tất cả Brand đều có status ACTIVE.
-     * ➤ Kết quả mong đợi: trả về toàn bộ brand.
+     * TC2: Test getAll() khi tất cả Brand đều có status ACTIVE.
+     * Kết quả mong đợi: trả về toàn bộ brand.
      */
     @Test
     @Transactional
-    @DisplayName("getAll() trả về toàn bộ brand nếu tất cả ACTIVE")
-    void test_TC2_getAllBrands_allActive() {
+    void TC2_getAllBrands_allActive() {
         // Given: 2 brand ACTIVE
         Brand b1 = new Brand();
         b1.setName("Trung Nguyen");
@@ -78,13 +76,12 @@ public class BrandRepositoryTest {
     }
 
     /**
-     * ✅ TC3: Test getAll() khi không có Brand nào có status ACTIVE.
-     * ➤ Kết quả mong đợi: danh sách trả về rỗng.
+     * TC3: Test getAll() khi không có Brand nào có status ACTIVE.
+     * Kết quả mong đợi: danh sách trả về rỗng.
      */
     @Test
     @Transactional
-    @DisplayName("getAll() trả về danh sách rỗng nếu không có brand ACTIVE")
-    void test_TC3_getAllBrands_allInactive() {
+    void TC3_getAllBrands_allInactive() {
         // Given: 2 brand INACTIVE
         Brand b1 = new Brand();
         b1.setName("ABC");
@@ -105,13 +102,12 @@ public class BrandRepositoryTest {
     }
 
     /**
-     * ✅ TC4: Test getAll() khi database rỗng.
-     * ➤ Kết quả mong đợi: danh sách trả về rỗng.
+     * TC4: Test getAll() khi database rỗng.
+     * Kết quả mong đợi: danh sách trả về rỗng.
      */
     @Test
     @Transactional
-    @DisplayName("getAll() trả về danh sách rỗng khi không có brand trong DB")
-    void test_TC4_getAllBrands_emptyDB() {
+    void TC4_getAllBrands_emptyDB() {
         // When
         List<Brand> result = brandRepository.getAll();
 

@@ -59,10 +59,10 @@ class OrderItemServiceTest {
     }
 
     @Nested
-    @DisplayName("Test getAllOrderItems")
+    @DisplayName("TC1-2: Test getAllOrderItems")
     class GetAllOrderItemsTest {
         @Test
-        @DisplayName("Lấy danh sách order items thành công khi có dữ liệu")
+        @DisplayName("TC1 - Lấy danh sách order items thành công khi có dữ liệu")
         void getAllOrderItems_Success_WithData() {
             // Input: Danh sách order items có dữ liệu
             // Expected: Trả về RespMessage chứa danh sách order items
@@ -84,7 +84,7 @@ class OrderItemServiceTest {
         }
 
         @Test
-        @DisplayName("Lấy danh sách order items thành công khi không có dữ liệu")
+        @DisplayName("TC2 - Lấy danh sách order items thành công khi không có dữ liệu")
         void getAllOrderItems_Success_EmptyList() {
             // Input: Danh sách order items rỗng
             // Expected: Trả về RespMessage chứa danh sách rỗng

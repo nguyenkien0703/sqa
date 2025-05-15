@@ -79,10 +79,10 @@ class ProfileServiceTest {
     }
 
     @Nested
-    @DisplayName("Test getProfile")
+    @DisplayName("TC1-2: Test getProfile")
     class GetProfileTest {
         @Test
-        @DisplayName("Lấy thông tin profile thành công")
+        @DisplayName("TC1 - Lấy thông tin profile thành công")
         void getProfile_Success() {
             // Input: Email của user đang đăng nhập
             // Expected: Trả về RespMessage chứa thông tin profile
@@ -103,7 +103,7 @@ class ProfileServiceTest {
         }
 
         @Test
-        @DisplayName("Lấy thông tin profile thất bại khi không tìm thấy user")
+        @DisplayName("TC2 - Lấy thông tin profile thất bại khi không tìm thấy user")
         void getProfile_UserNotFound() {
             // Input: Email không tồn tại trong hệ thống
             // Expected: Ném ra CoffeeShopException với mã lỗi UNAUTHORIZED
@@ -120,10 +120,10 @@ class ProfileServiceTest {
     }
 
     @Nested
-    @DisplayName("Test updateProfile")
+    @DisplayName("TC3-10: Test updateProfile")
     class UpdateProfileTest {
         @Test
-        @DisplayName("Cập nhật profile thành công")
+        @DisplayName("TC3 - Cập nhật profile thành công")
         void updateProfile_Success() {
             // Input: UserRequest với thông tin mới
             // Expected: Trả về RespMessage chứa thông tin profile đã cập nhật
@@ -156,7 +156,7 @@ class ProfileServiceTest {
         }
 
         @Test
-        @DisplayName("Cập nhật profile thất bại khi không tìm thấy user")
+        @DisplayName("TC4 - Cập nhật profile thất bại khi không tìm thấy user")
         void updateProfile_UserNotFound() {
             // Input: UserRequest với email không tồn tại
             // Expected: Ném ra CoffeeShopException với mã lỗi UNAUTHORIZED
@@ -173,7 +173,7 @@ class ProfileServiceTest {
         }
 
         @Test
-        @DisplayName("Cập nhật profile thành công khi không cập nhật password")
+        @DisplayName("TC5 - Cập nhật profile thành công khi không cập nhật password")
         void updateProfile_Success_WithoutPassword() {
             // Input: UserRequest với thông tin mới nhưng không có password
             // Expected: Trả về RespMessage chứa thông tin profile đã cập nhật, password không thay đổi
@@ -205,7 +205,7 @@ class ProfileServiceTest {
         }
 
         @Test
-        @DisplayName("Cập nhật profile thành công khi password và confirmPassword không khớp")
+        @DisplayName("TC6 - Cập nhật profile thành công khi password và confirmPassword không khớp")
         void updateProfile_Success_PasswordMismatch() {
             // Input: UserRequest với password và confirmPassword không khớp
             // Expected: Trả về RespMessage chứa thông tin profile đã cập nhật, password không thay đổi
@@ -238,7 +238,7 @@ class ProfileServiceTest {
         }
 
         @Test
-        @DisplayName("Cập nhật profile thành công khi chỉ cập nhật một số trường")
+        @DisplayName("TC7 - Cập nhật profile thành công khi chỉ cập nhật một số trường")
         void updateProfile_Success_PartialUpdate() {
             // Input: UserRequest chỉ cập nhật một số trường
             // Expected: Trả về RespMessage chứa thông tin profile đã cập nhật, các trường khác giữ nguyên
@@ -268,7 +268,7 @@ class ProfileServiceTest {
         }
 
         @Test
-        @DisplayName("Cập nhật profile thành công khi chỉ cập nhật password")
+        @DisplayName("TC8 - Cập nhật profile thành công khi chỉ cập nhật password")
         void updateProfile_Success_OnlyPassword() {
             // Input: UserRequest chỉ có password và confirmPassword
             // Expected: Trả về RespMessage chứa thông tin profile, chỉ cập nhật password
@@ -299,7 +299,7 @@ class ProfileServiceTest {
         }
 
         @Test
-        @DisplayName("Cập nhật profile thành công khi không có thông tin cập nhật")
+        @DisplayName("TC9 - Cập nhật profile thành công khi không có thông tin cập nhật")
         void updateProfile_Success_NoUpdate() {
             // Input: UserRequest rỗng
             // Expected: Trả về RespMessage chứa thông tin profile, không có gì thay đổi
@@ -326,13 +326,71 @@ class ProfileServiceTest {
             verify(userRepository, times(1)).save(testUser);
             verify(passwordEncoder, never()).encode(anyString());
         }
+
+        @Test
+        @DisplayName("TC10 - Cập nhật profile thành công khi chỉ có password mà không có confirmPassword")
+        void updateProfile_Success_OnlyPasswordNoConfirm() {
+            // Input: UserRequest chỉ có password mà không có confirmPassword
+            // Expected: Trả về RespMessage chứa thông tin profile, password không thay đổi
+
+            // Arrange
+            UserRequest userRequest = new UserRequest();
+            userRequest.setName("New Name");
+            userRequest.setPassword("newPassword");
+            // Không set confirmPassword
+
+            when(userRepository.findByEmail(testEmail)).thenReturn(Optional.of(testUser));
+            when(messageBuilder.buildSuccessMessage(any(ProfileResponse.class))).thenReturn(successResponse);
+
+            // Act
+            RespMessage result = profileService.updateProfile(userRequest);
+
+            // Assert
+            assertNotNull(result);
+            assertEquals(successResponse.getRespCode(), result.getRespCode());
+            assertEquals(successResponse.getRespDesc(), result.getRespDesc());
+            assertEquals("New Name", testUser.getName());
+            assertNull(testUser.getPassword()); // Password không thay đổi vì thiếu confirmPassword
+            verify(userRepository, times(1)).findByEmail(testEmail);
+            verify(userRepository, times(1)).save(testUser);
+            verify(passwordEncoder, never()).encode(anyString());
+        }
+
+        @Test
+        @DisplayName("TC11 - Cập nhật profile thành công khi chỉ có confirmPassword mà không có password")
+        void updateProfile_Success_OnlyConfirmNoPassword() {
+            // Input: UserRequest chỉ có confirmPassword mà không có password
+            // Expected: Trả về RespMessage chứa thông tin profile, password không thay đổi
+
+            // Arrange
+            UserRequest userRequest = new UserRequest();
+            userRequest.setName("New Name");
+            userRequest.setConfirmPassword("newPassword");
+            // Không set password
+
+            when(userRepository.findByEmail(testEmail)).thenReturn(Optional.of(testUser));
+            when(messageBuilder.buildSuccessMessage(any(ProfileResponse.class))).thenReturn(successResponse);
+
+            // Act
+            RespMessage result = profileService.updateProfile(userRequest);
+
+            // Assert
+            assertNotNull(result);
+            assertEquals(successResponse.getRespCode(), result.getRespCode());
+            assertEquals(successResponse.getRespDesc(), result.getRespDesc());
+            assertEquals("New Name", testUser.getName());
+            assertNull(testUser.getPassword()); // Password không thay đổi vì thiếu password
+            verify(userRepository, times(1)).findByEmail(testEmail);
+            verify(userRepository, times(1)).save(testUser);
+            verify(passwordEncoder, never()).encode(anyString());
+        }
     }
 
     @Nested
-    @DisplayName("Test updateAvatar")
+    @DisplayName("TC12-14: Test updateAvatar")
     class UpdateAvatarTest {
         @Test
-        @DisplayName("Cập nhật avatar thành công")
+        @DisplayName("TC12 - Cập nhật avatar thành công")
         void updateAvatar_Success() {
             // Input: MultipartFile chứa ảnh mới
             // Expected: Trả về RespMessage chứa thông tin profile với avatar mới
@@ -364,7 +422,7 @@ class ProfileServiceTest {
         }
 
         @Test
-        @DisplayName("Cập nhật avatar thất bại khi không tìm thấy user")
+        @DisplayName("TC13 - Cập nhật avatar thất bại khi không tìm thấy user")
         void updateAvatar_UserNotFound() {
             // Input: MultipartFile với email không tồn tại
             // Expected: Ném ra CoffeeShopException với mã lỗi UNAUTHORIZED
@@ -386,7 +444,7 @@ class ProfileServiceTest {
         }
 
         @Test
-        @DisplayName("Cập nhật avatar thất bại khi upload ảnh thất bại")
+        @DisplayName("TC14 - Cập nhật avatar thất bại khi upload ảnh thất bại")
         void updateAvatar_UploadFailed() {
             // Input: MultipartFile không hợp lệ
             // Expected: Ném ra CoffeeShopException
