@@ -29,12 +29,13 @@ public class UserRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // Tạo role cho test
+        
         Role role = new Role();
         role.setName(RoleEnum.ROLE_USER);
         userRole = roleRepository.save(role);
     }
 
+    //Tìm kiếm User theo Email
     @Test
     public void whenFindByEmail_thenReturnUser() {
         // Tạo user test
@@ -45,24 +46,22 @@ public class UserRepositoryTest {
         user.setRole(userRole);
         userRepository.save(user);
 
-        // Thực hiện test
         Optional<User> found = userRepository.findByEmail("test@example.com");
 
-        // Kiểm tra kết quả
         assertThat(found).isPresent();
         assertThat(found.get().getEmail()).isEqualTo("test@example.com");
     }
 
     @Test
+    // Tìm user theo email không tồn tại
     public void whenFindByEmail_withNonExistentEmail_thenReturnEmpty() {
-        // Thực hiện test với email không tồn tại
         Optional<User> found = userRepository.findByEmail("nonexistent@example.com");
 
-        // Kiểm tra kết quả
         assertThat(found).isEmpty();
     }
 
     @Test
+    // Kiểm tra sự tồn tại của user theo email
     public void whenExistsUserByEmail_withExistingEmail_thenReturnTrue() {
         // Tạo user test
         User user = new User();
@@ -72,26 +71,24 @@ public class UserRepositoryTest {
         user.setRole(userRole);
         userRepository.save(user);
 
-        // Thực hiện test
         boolean exists = userRepository.existsUserByEmail("exists@example.com");
 
-        // Kiểm tra kết quả
         assertThat(exists).isTrue();
     }
 
     @Test
+    //Kiểm tra sự tồn tại của user theo email
     public void whenExistsUserByEmail_withNonExistentEmail_thenReturnFalse() {
-        // Thực hiện test
         boolean exists = userRepository.existsUserByEmail("nonexistent@example.com");
 
-        // Kiểm tra kết quả
         assertThat(exists).isFalse();
     }
 
     @Test
     @Transactional
+    //Cập nhật mật khẩu user
     public void whenUpdatePassword_thenPasswordIsUpdated() {
-        // Tạo user test
+       
         User user = new User();
         user.setEmail("password@example.com");
         user.setPassword("oldPassword");
@@ -99,32 +96,30 @@ public class UserRepositoryTest {
         user.setRole(userRole);
         User savedUser = userRepository.save(user);
         
-        // Đảm bảo user được lưu
+        
         assertThat(savedUser.getId()).isNotNull();
         assertThat(savedUser.getPassword()).isEqualTo("oldPassword");
 
-        // Thực hiện update password
+      
         String newPassword = "newPassword123";
         userRepository.updatePassword(savedUser.getEmail(), newPassword);
         userRepository.flush(); // Đảm bảo changes được flush xuống DB
 
-        // Refresh data từ DB
         User updatedUser = userRepository.findById(savedUser.getId()).orElseThrow();
         
-        // Kiểm tra kết quả
+       
         assertThat(updatedUser.getPassword())
             .as("Password should be updated to new value")
             .isEqualTo(newPassword);
     }
 
     @Test
+    //Lấy danh sách user có role USER
     public void whenGetAllUser_thenReturnOnlyUsersWithRoleUser() {
-        // Tạo role ADMIN
         Role adminRole = new Role();
         adminRole.setName(RoleEnum.ROLE_ADMIN);
         roleRepository.save(adminRole);
 
-        // Tạo user với role USER
         User normalUser = new User();
         normalUser.setEmail("user@example.com");
         normalUser.setPassword("password");
@@ -132,7 +127,6 @@ public class UserRepositoryTest {
         normalUser.setRole(userRole);
         userRepository.save(normalUser);
 
-        // Tạo user với role ADMIN
         User adminUser = new User();
         adminUser.setEmail("admin@example.com");
         adminUser.setPassword("password");
@@ -140,10 +134,8 @@ public class UserRepositoryTest {
         adminUser.setRole(adminRole);
         userRepository.save(adminUser);
 
-        // Thực hiện test
         List<User> users = userRepository.getAllUser();
 
-        // Kiểm tra kết quả
         assertThat(users).hasSize(1);
         assertThat(users.get(0).getRole().getName()).isEqualTo(RoleEnum.ROLE_USER);
     }

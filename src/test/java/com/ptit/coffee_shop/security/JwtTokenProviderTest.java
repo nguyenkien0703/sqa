@@ -41,12 +41,10 @@ public class JwtTokenProviderTest {
 
     @BeforeEach
     void setUp() {
-        // Set up test JWT properties
         ReflectionTestUtils.setField(jwtTokenProvider, "jwtSecret", TEST_JWT_SECRET);
         ReflectionTestUtils.setField(jwtTokenProvider, "jwtExpirationDate", TEST_JWT_EXPIRATION);
         ReflectionTestUtils.setField(jwtTokenProvider, "jwtRefreshExpirationDate", TEST_REFRESH_EXPIRATION);
 
-        // Create test user
         Role role = new Role();
         role.setName(RoleEnum.ROLE_USER);
 
@@ -58,15 +56,14 @@ public class JwtTokenProviderTest {
     }
 
     @Test
+    //Tạo JWT token cho người dùng hợp lệ
     public void whenGenerateToken_thenReturnLoginResponse() {
-        // Arrange
+        
         when(authentication.getName()).thenReturn("test@example.com");
         when(userService.getUserByEmail("test@example.com")).thenReturn(Optional.of(testUser));
 
-        // Act
         LoginResponse loginResponse = jwtTokenProvider.generateToken(authentication);
 
-        // Assert
         assertThat(loginResponse).isNotNull();
         assertThat(loginResponse.getAccessToken()).isNotNull();
         assertThat(loginResponse.getRefreshToken()).isNotNull();
@@ -75,53 +72,54 @@ public class JwtTokenProviderTest {
     }
 
     @Test
+    //Xử lý trường hợp tạo token với user không tồn tại
     public void whenGenerateToken_withInvalidUser_thenThrowException() {
-        // Arrange
+        
         when(authentication.getName()).thenReturn("invalid@example.com");
         when(userService.getUserByEmail("invalid@example.com")).thenReturn(Optional.empty());
 
-        // Act & Assert
+        
         assertThrows(CoffeeShopException.class, () -> jwtTokenProvider.generateToken(authentication));
     }
 
     @Test
+    //Xác thực tính hợp lệ của token
     public void whenValidateToken_withValidToken_thenReturnTrue() {
-        // Arrange
+        
         String token = jwtTokenProvider.generateAccessToken("test@example.com");
 
-        // Act & Assert
+        
         assertThat(jwtTokenProvider.validateToken(token)).isTrue();
     }
 
     @Test
+    //Xử lý token không hợp lệ
     public void whenValidateToken_withInvalidToken_thenThrowException() {
-        // Act & Assert
+        
         assertThrows(CoffeeShopException.class, () -> jwtTokenProvider.validateToken("invalid.token.here"));
     }
 
     @Test
+    //Trích xuất username từ token
     public void whenGetUsername_thenReturnCorrectUsername() {
-        // Arrange
+        
         String username = "test@example.com";
         String token = jwtTokenProvider.generateAccessToken(username);
 
-        // Act
         String extractedUsername = jwtTokenProvider.getUsername(token);
 
-        // Assert
         assertThat(extractedUsername).isEqualTo(username);
     }
 
     @Test
+    //Tạo và so sánh access token và refresh token
     public void whenGenerateAccessAndRefreshTokens_thenTokensAreDifferent() {
-        // Arrange
+        
         String username = "test@example.com";
 
-        // Act
         String accessToken = jwtTokenProvider.generateAccessToken(username);
         String refreshToken = jwtTokenProvider.generateRefreshToken(username);
 
-        // Assert
         assertThat(accessToken).isNotEqualTo(refreshToken);
     }
 

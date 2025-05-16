@@ -29,6 +29,7 @@ public class OrderRepositoryTest {
     private ShippingAddressRepository shippingAddressRepository;
 
     @Test
+    //Tìm kiếm Order theo ShippingAddress ID
     public void whenFindByShippingAddressId_thenReturnOrder() {
         // Tạo dữ liệu test: User
         User user = new User();
@@ -60,6 +61,7 @@ public class OrderRepositoryTest {
     }
 
     @Test
+    //Tìm kiếm danh sách Order theo User ID
     public void whenFindByUserId_thenReturnOrders() {
         // Tạo dữ liệu test: User
         User user = new User();
@@ -98,6 +100,7 @@ public class OrderRepositoryTest {
     }
 
     @Test
+    // Tìm kiếm danh sách Order theo Status
     public void whenFindByStatus_thenReturnOrders() {
         // Tạo dữ liệu test: User và ShippingAddress
         User user = new User();

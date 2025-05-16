@@ -42,6 +42,6 @@ public class ShippingAddress {
 
 
     public ShippingAddressResponse toResponse() {
-        return new ShippingAddressResponse(id, receiverName, receiverPhone, location, status, user.getId());
+        return new ShippingAddressResponse(id, receiverName, receiverPhone, location, status, user != null ? user.getId() : null);
     }
 }

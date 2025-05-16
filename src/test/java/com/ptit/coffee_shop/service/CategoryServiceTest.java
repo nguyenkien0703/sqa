@@ -65,72 +65,64 @@ public class CategoryServiceTest {
     }
 
     @Test
+    //Lấy danh sách tất cả category đang active
     public void whenGetAllCategories_thenReturnActiveCategories() {
-        // Arrange
         List<Category> categories = Arrays.asList(testCategory);
         when(categoryRepository.findAllCategories()).thenReturn(categories);
 
-        // Act
         RespMessage result = categoryService.getAllCategories();
 
-        // Assert
         assertThat(result).isNotNull();
         verify(categoryRepository).findAllCategories();
     }
 
     @Test
+    //Lấy thông tin category theo ID
     public void whenGetCategoryById_withValidId_thenReturnCategory() {
-        // Arrange
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(testCategory));
 
-        // Act
         RespMessage result = categoryService.getCategoryById(1L);
 
-        // Assert
         assertThat(result).isNotNull();
         verify(categoryRepository).findById(1L);
     }
 
     @Test
+    //Xử lý trường hợp category không active
     public void whenGetCategoryById_withInactiveCategory_thenThrowException() {
-        // Arrange
         testCategory.setStatus(Status.INACTIVE);
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(testCategory));
 
-        // Act & Assert
         assertThrows(CoffeeShopException.class, () -> categoryService.getCategoryById(1L));
     }
 
     @Test
+    //Thêm mới category
     public void whenAddCategory_withValidData_thenReturnSuccess() {
-        // Arrange
         when(categoryRepository.findByName(anyString())).thenReturn(Optional.empty());
         when(categoryRepository.save(any(Category.class))).thenReturn(testCategory);
         Map<String, String> uploadResult = new HashMap<>();
         uploadResult.put("secure_url", "http://test-image.jpg");
         when(cloudinaryService.upload(any(), anyString())).thenReturn(uploadResult);
 
-        // Act
         RespMessage result = categoryService.addCategory("New Category", "Description", mockImageFile);
 
-        // Assert
         assertThat(result).isNotNull();
         verify(categoryRepository).save(any(Category.class));
     }
 
     @Test
+    //Xử lý trùng tên category
     public void whenAddCategory_withDuplicateName_thenThrowException() {
-        // Arrange
         when(categoryRepository.findByName(anyString())).thenReturn(Optional.of(testCategory));
 
-        // Act & Assert
         assertThrows(CoffeeShopException.class, 
             () -> categoryService.addCategory("Test Category", "Description", null));
     }
 
     @Test
+    //Cập nhật thông tin category
     public void whenUpdateCategory_withValidData_thenReturnSuccess() {
-        // Arrange
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(testCategory));
         when(categoryRepository.findByName(anyString())).thenReturn(Optional.empty());
         when(categoryRepository.save(any(Category.class))).thenReturn(testCategory);
@@ -138,25 +130,21 @@ public class CategoryServiceTest {
         uploadResult.put("secure_url", "http://new-image.jpg");
         when(cloudinaryService.upload(any(), anyString())).thenReturn(uploadResult);
 
-        // Act
         RespMessage result = categoryService.updateCategory(1L, "Updated Category", "Updated Description", mockImageFile);
 
-        // Assert
         assertThat(result).isNotNull();
         verify(categoryRepository).save(any(Category.class));
         verify(cloudinaryService).delete(anyString());
     }
 
     @Test
+    //Xóa mềm category
     public void whenDeleteCategory_thenSetStatusInactive() {
-        // Arrange
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(testCategory));
         when(categoryRepository.save(any(Category.class))).thenReturn(testCategory);
 
-        // Act
         RespMessage result = categoryService.deleteCategory(1L);
 
-        // Assert
         assertThat(result).isNotNull();
         verify(categoryRepository).save(any(Category.class));
         verify(cloudinaryService).delete(anyString());

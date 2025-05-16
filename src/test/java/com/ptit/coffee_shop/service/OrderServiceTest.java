@@ -70,31 +70,26 @@ public class OrderServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Set up test user
         testUser = new User();
         testUser.setId(1L);
         testUser.setEmail("test@example.com");
 
-        // Set up test product type
         testType = new TypeProduct();
         testType.setId(1L);
         testType.setName("Hot Coffee");
         testType.setStatus(Status.ACTIVE);
 
-        // Set up test product
         testProduct = new Product();
         testProduct.setId(1L);
         testProduct.setName("Test Coffee");
         testProduct.setStatus(Status.ACTIVE);
 
-        // Set up test product item
         testProductItem = new ProductItem();
         testProductItem.setId(1L);
         testProductItem.setProduct(testProduct);
         testProductItem.setType(testType);
         testProductItem.setStock(10);
 
-        // Set up test shipping address
         testShippingAddress = new ShippingAddress();
         testShippingAddress.setId(1L);
         testShippingAddress.setStatus(Status.ACTIVE);
@@ -103,7 +98,6 @@ public class OrderServiceTest {
         testShippingAddress.setReceiverPhone("1234567890");
         testShippingAddress.setLocation("Test Address");
 
-        // Set up test order
         testOrder = new Order();
         testOrder.setId(1L);
         testOrder.setOrderDate(new Date());
@@ -111,7 +105,6 @@ public class OrderServiceTest {
         testOrder.setPaymentMethod(PaymentMethod.COD);
         testOrder.setShippingAddress(testShippingAddress);
 
-        // Set up test order item
         testOrderItem = new OrderItem();
         testOrderItem.setId(1L);
         testOrderItem.setOrder(testOrder);
@@ -120,27 +113,22 @@ public class OrderServiceTest {
         testOrderItem.setAmount(2);
         testOrderItem.setDiscount(10000.0);
 
-        // Set up test image
         testImage = new Image();
         testImage.setUrl("http://test-image.jpg");
         testImage.setProduct(testProduct);
 
-        // Set up test transaction
         testTransaction = new Transaction();
         testTransaction.setId(1L);
         testTransaction.setOrder(testOrder);
 
-        // Set up success response
         successResponse = RespMessage.builder()
                 .data("Test Response")
                 .build();
 
-        // Set up security context
         when(authentication.getName()).thenReturn("test@example.com");
         when(securityContext.getAuthentication()).thenReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
 
-        // Default mock behaviors
         when(messageBuilder.buildSuccessMessage(any())).thenReturn(successResponse);
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
         when(imageRepository.findByProduct(testProduct)).thenReturn(Arrays.asList(testImage));
@@ -152,38 +140,34 @@ public class OrderServiceTest {
     }
 
     @Test
+    //Lấy danh sách tất cả các đơn hàng trong hệ thống
     public void whenGetAllOrders_thenReturnOrderList() {
-        // Arrange
         List<Order> orders = Arrays.asList(testOrder);
         List<OrderItem> orderItems = Arrays.asList(testOrderItem);
         when(orderRepository.findAll()).thenReturn(orders);
         when(orderItemRepository.findByOrderId(anyLong())).thenReturn(orderItems);
 
-        // Act
         RespMessage result = orderService.getAllOrders();
 
-        // Assert
         assertThat(result).isNotNull();
         verify(orderRepository).findAll();
     }
 
     @Test
+    // Lấy thông tin chi tiết của một đơn hàng theo ID
     public void whenGetOrderById_withValidId_thenReturnOrder() {
-        // Arrange
         when(orderRepository.findById(1L)).thenReturn(Optional.of(testOrder));
         when(orderItemRepository.findByOrderId(1L)).thenReturn(Arrays.asList(testOrderItem));
 
-        // Act
         RespMessage result = orderService.getOrderById(1L);
 
-        // Assert
         assertThat(result).isNotNull();
         verify(orderRepository).findById(1L);
     }
 
     @Test
+    //Tạo đơn hàng mới với các sản phẩm được chọn
     public void whenAddOrder_withValidData_thenReturnSuccess() {
-        // Arrange
         OrderItemRequest orderItemRequest = new OrderItemRequest();
         orderItemRequest.setProductItemId(1L);
         orderItemRequest.setAmount(2);
@@ -199,81 +183,69 @@ public class OrderServiceTest {
         when(productItemRepository.findById(1L)).thenReturn(Optional.of(testProductItem));
         when(orderRepository.save(any())).thenReturn(testOrder);
 
-        // Act
         RespMessage result = orderService.addOrder(orderRequest);
 
-        // Assert
         assertThat(result).isNotNull();
         verify(orderRepository).save(any());
         verify(orderItemRepository).save(any());
     }
 
     @Test
+    //Cập nhật trạng thái đơn hàng theo quy trình (Processing -> Processed -> Shipping -> Completed)
     public void whenUpdateOrderStatus_withValidStatus_thenReturnSuccess() {
-        // Arrange
         when(orderRepository.findById(1L)).thenReturn(Optional.of(testOrder));
         when(orderRepository.save(any())).thenReturn(testOrder);
 
-        // Act
         RespMessage result = orderService.updateOrderStatus(1L);
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(testOrder.getStatus()).isEqualTo(OrderStatus.Processed);
     }
 
     @Test
+    //Hủy đơn hàng và xử lý hoàn tiền 
     public void whenCancelOrder_withProcessingOrder_thenReturnSuccess() {
-        // Arrange
         when(orderRepository.findById(1L)).thenReturn(Optional.of(testOrder));
         when(orderRepository.save(any())).thenReturn(testOrder);
 
-        // Act
         RespMessage result = orderService.cancelOrder(1L);
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(testOrder.getStatus()).isEqualTo(OrderStatus.Cancelled);
     }
 
     @Test
+    //Lấy danh sách đơn hàng của người dùng hiện tại đang đăng nhập
     public void whenGetOrdersByUser_thenReturnUserOrders() {
-        // Arrange
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testUser));
         when(orderRepository.findByUserId(1L)).thenReturn(Arrays.asList(testOrder));
         when(orderItemRepository.findByOrderId(1L)).thenReturn(Arrays.asList(testOrderItem));
 
-        // Act
         RespMessage result = orderService.getOrdersByUser();
 
-        // Assert
         assertThat(result).isNotNull();
         verify(orderRepository).findByUserId(1L);
     }
 
     @Test
+    //Lấy danh sách đơn hàng theo trạng thái cụ thể
     public void whenGetOrderByStatus_thenReturnFilteredOrders() {
-        // Arrange
         when(orderRepository.findByStatus(OrderStatus.Processing)).thenReturn(Arrays.asList(testOrder));
         when(orderItemRepository.findByOrderId(1L)).thenReturn(Arrays.asList(testOrderItem));
 
-        // Act
         RespMessage result = orderService.getOrderByStatus(OrderStatus.Processing);
 
-        // Assert
         assertThat(result).isNotNull();
         verify(orderRepository).findByStatus(OrderStatus.Processing);
     }
 
     @Test
+    //Chuyển đổi đối tượng OrderItem thành OrderItemResponse để trả về cho client
     public void whenToOrderItemResponse_thenReturnResponse() {
-        // Arrange
         when(imageRepository.findByProduct(testProduct)).thenReturn(Arrays.asList(testImage));
 
-        // Act
         OrderItemResponse result = orderService.toOrderItemResponse(testOrderItem);
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getProductName()).isEqualTo(testProduct.getName());
         assertThat(result.getProductImage()).isEqualTo(testImage.getUrl());

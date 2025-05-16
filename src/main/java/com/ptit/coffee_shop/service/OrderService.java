@@ -275,6 +275,7 @@ public class OrderService {
 
     public OrderItemResponse toOrderItemResponse(OrderItem orderItem) {
         List<Image> productImages = imageRepository.findByProduct(orderItem.getProductItem().getProduct());
+        String productImage = productImages.isEmpty() ? null : productImages.get(0).getUrl();
         return OrderItemResponse.builder()
                 .orderItemId(orderItem.getId())
                 .productItemId(orderItem.getProductItem().getId())
@@ -285,7 +286,7 @@ public class OrderService {
                 .price(orderItem.getPrice())
                 .discount(orderItem.getDiscount())
                 .isReviewed(orderItem.isReviewed())
-                .productImage(productImages.get(0).getUrl())
+                .productImage(productImage)
                 .build();
     }
 }

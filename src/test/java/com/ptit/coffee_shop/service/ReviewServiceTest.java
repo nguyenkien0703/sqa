@@ -63,7 +63,6 @@ public class ReviewServiceTest {
 
     @BeforeEach
     public void setup() {
-        // Setup test data
         testProduct = new Product();
         testProduct.setId(1L);
         testProduct.setName("Test Product");
@@ -122,29 +121,16 @@ public class ReviewServiceTest {
                 .build();
     }
 
-    /**
-     * Tên hàm: addReview
-     * Chức năng: Thêm đánh giá mới cho một sản phẩm từ đơn hàng
-     * Mục tiêu test: Kiểm tra việc thêm đánh giá mới
-     * Lớp: ReviewService
-     * Phương thức: public RespMessage addReview(ReviewRequet reviewRequet)
-     * Input: ReviewRequet chứa thông tin đánh giá (orderItemId, rating, comment)
-     * Expected Output:
-     * - Success: RespMessage chứa ReviewResponse của đánh giá mới
-     * - Failure: CoffeeShopException khi không tìm thấy OrderItem hoặc lỗi khi lưu
-     * Độ phủ: 100%
-     */
+   
     @Test
+    //Kiểm tra việc thêm đánh giá mới cho sản phẩm từ đơn hàng
     public void whenAddReview_withValidData_thenReturnSuccess() {
-        // Arrange
         when(orderItemRepository.findById(1L)).thenReturn(Optional.of(testOrderItem));
         when(reviewRepository.save(any(Review.class))).thenReturn(testReview);
         when(messageBuilder.buildSuccessMessage(any())).thenReturn(successResponse);
 
-        // Act
         RespMessage result = reviewService.addReview(testReviewRequest);
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getRespCode()).isEqualTo(Constant.SUCCESS);
         verify(orderItemRepository).findById(1L);
@@ -154,11 +140,10 @@ public class ReviewServiceTest {
     }
 
     @Test
+    //Kiểm tra việc thêm đánh giá mới cho sản phẩm từ đơn hàng
     public void whenAddReview_withNonExistentOrderItem_thenThrowException() {
-        // Arrange
         when(orderItemRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         CoffeeShopException exception = assertThrows(CoffeeShopException.class, () -> {
             reviewService.addReview(testReviewRequest);
         });
@@ -167,55 +152,31 @@ public class ReviewServiceTest {
         assertThat(exception.getMessage()).isEqualTo("OrderItem could not be found");
     }
 
-    /**
-     * Tên hàm: getAllReviews
-     * Chức năng: Lấy tất cả các đánh giá trong hệ thống
-     * Mục tiêu test: Kiểm tra việc lấy danh sách tất cả đánh giá
-     * Lớp: ReviewService
-     * Phương thức: public RespMessage getAllReviews()
-     * Input: Không có input
-     * Expected Output: RespMessage chứa danh sách ReviewResponse
-     * Độ phủ: 100%
-     */
+    
     @Test
+    //Kiểm tra việc lấy tất cả các đánh giá trong hệ thống
     public void whenGetAllReviews_thenReturnAllReviews() {
-        // Arrange
         List<Review> reviews = Arrays.asList(testReview);
         when(reviewRepository.findAll()).thenReturn(reviews);
         when(messageBuilder.buildSuccessMessage(any())).thenReturn(successResponse);
 
-        // Act
         RespMessage result = reviewService.getAllReviews();
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getRespCode()).isEqualTo(Constant.SUCCESS);
         verify(reviewRepository).findAll();
     }
 
-    /**
-     * Tên hàm: deleteReview
-     * Chức năng: Xóa đánh giá bằng cách đánh dấu là INACTIVE
-     * Mục tiêu test: Kiểm tra việc xóa đánh giá
-     * Lớp: ReviewService
-     * Phương thức: public RespMessage deleteReview(long reviewId)
-     * Input: reviewId (long)
-     * Expected Output:
-     * - Success: RespMessage chứa ReviewResponse của đánh giá đã xóa
-     * - Failure: CoffeeShopException khi không tìm thấy Review hoặc lỗi khi lưu
-     * Độ phủ: 100%
-     */
+    
     @Test
+    //Kiểm tra việc xóa đánh giá bằng cách đánh dấu là INACTIVE
     public void whenDeleteReview_withValidId_thenReturnSuccess() {
-        // Arrange
         when(reviewRepository.findById(1L)).thenReturn(Optional.of(testReview));
         when(reviewRepository.save(any(Review.class))).thenReturn(testReview);
         when(messageBuilder.buildSuccessMessage(any())).thenReturn(successResponse);
 
-        // Act
         RespMessage result = reviewService.deleteReview(1L);
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getRespCode()).isEqualTo(Constant.SUCCESS);
         verify(reviewRepository).findById(1L);
@@ -224,11 +185,10 @@ public class ReviewServiceTest {
     }
 
     @Test
+    //Kiểm tra việc xóa đánh giá bằng cách đánh dấu là INACTIVE
     public void whenDeleteReview_withNonExistentId_thenThrowException() {
-        // Arrange
         when(reviewRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         CoffeeShopException exception = assertThrows(CoffeeShopException.class, () -> {
             reviewService.deleteReview(1L);
         });
@@ -237,55 +197,39 @@ public class ReviewServiceTest {
         assertThat(exception.getMessage()).isEqualTo("Review could not be found");
     }
 
-    /**
-     * Tên hàm: getReviewByProductId
-     * Chức năng: Lấy danh sách đánh giá theo ID sản phẩm
-     * Mục tiêu test: Kiểm tra việc lấy danh sách đánh giá theo sản phẩm
-     * Lớp: ReviewService
-     * Phương thức: public RespMessage getReviewByProductId(long productId)
-     * Input: productId (long)
-     * Expected Output:
-     * - Success: RespMessage chứa danh sách ReviewResponse của sản phẩm
-     * - Failure: CoffeeShopException khi không tìm thấy đánh giá
-     * Độ phủ: 100%
-     */
+    
     @Test
+    // Kiểm tra việc lấy danh sách đánh giá theo ID sản phẩm
     public void whenGetReviewByProductId_withValidId_thenReturnReviews() {
-        // Arrange
         List<Review> reviews = Arrays.asList(testReview);
         when(reviewRepository.findByProductId(1L)).thenReturn(reviews);
         when(messageBuilder.buildSuccessMessage(any())).thenReturn(successResponse);
 
-        // Act
         RespMessage result = reviewService.getReviewByProductId(1L);
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getRespCode()).isEqualTo(Constant.SUCCESS);
         verify(reviewRepository).findByProductId(1L);
     }
 
     @Test
+    //Kiểm tra việc lấy danh sách đánh giá theo ID sản phẩm
     public void whenGetReviewByProductId_withNoReviews_thenReturnEmptyList() {
-        // Arrange
         when(reviewRepository.findByProductId(1L)).thenReturn(Arrays.asList());
         when(messageBuilder.buildSuccessMessage(any())).thenReturn(successResponse);
 
-        // Act
         RespMessage result = reviewService.getReviewByProductId(1L);
 
-        // Assert
         assertThat(result).isNotNull();
         assertThat(result.getRespCode()).isEqualTo(Constant.SUCCESS);
         verify(reviewRepository).findByProductId(1L);
     }
 
     @Test
+    // Kiểm tra việc lấy danh sách đánh giá theo ID sản phẩm
     public void whenGetReviewByProductId_withException_thenThrowException() {
-        // Arrange
         when(reviewRepository.findByProductId(1L)).thenThrow(new RuntimeException("Database error"));
 
-        // Act & Assert
         CoffeeShopException exception = assertThrows(CoffeeShopException.class, () -> {
             reviewService.getReviewByProductId(1L);
         });
